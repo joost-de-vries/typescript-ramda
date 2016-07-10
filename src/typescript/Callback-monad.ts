@@ -30,9 +30,9 @@ class Callback<A>{
 
   // this :: Callback x
   // (x -> Callback y) -> Callback y
-  bind<B>(g: (a:A) => Callback<B>):Callback<B> {
+  bind<B>(g: (a: A) => Callback<B>): Callback<B> {
     return new Callback((callback: CB<B>) => {
-      this.run((error?, result?:A) => {
+      this.run((error?, result?: A) => {
         if (!!error) {
           callback(error, null)
         } else {
@@ -44,14 +44,14 @@ class Callback<A>{
 
   // this :: Callback x
   // x -> (y || Callback y) -> Callback y
-  then<B>(g:(a:A)=> B | Callback<B>):Callback<B> {
-    return new Callback((callback:CB<B>) => {
-      this.run((error?, result?) => {
-        if (error) {
+  then<B>(g: (a: A) => B | Callback<B>): Callback<B> {
+    return new Callback((callback: CB<B>) => {
+      this.run((error?, result?: A) => {
+        if (!!error) {
           callback(error, null)
         } else {
           try {
-            const y = g(result)
+            const y: B | Callback<B> = g(result)
             if (y instanceof Callback) {
               y.run(callback)
             } else {
@@ -70,16 +70,16 @@ class Callback<A>{
   }
 
   // x -> Callback x
-  static pure(x) {
-    return new Callback(cb => cb(null, x))
+  static pure<A>(x: A) {
+    return new Callback<A>(((cb: CB<A>) => cb(null, x)))
   }
 
   static resolve = Callback.pure
 
   // Callback.from casts f into a Callback instance, where
   // f is a function that takes x and a callback function
-  static from(f) {
-    return (...x) => new Callback(cb => f(...x, cb))
+  static from<A>(f: (x: A, cb: CB<A>) => Try<A>) {
+    return (x: A) => new Callback(cb => f(x, cb))
   }
 }
 
