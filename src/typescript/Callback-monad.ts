@@ -6,7 +6,7 @@ type AsyncValue<T> = (g: CB<T>) => Try<T>
 class Callback<A>{
   constructor(private f: AsyncValue<A>) {
   }
-  // this.run = f
+
   run(callback: CB<A>): void {
     try {
       return this.f(callback)
@@ -14,8 +14,7 @@ class Callback<A>{
       return callback(ex)
     }
   }
-  // this :: Callback x
-  // (x -> y) -> Callback y
+
   map<B>(g: (a: A) => B): Callback<B> {
     return new Callback((callback: CB<B>) => {
       this.run((error?: Err, result?: A) => {
@@ -28,11 +27,9 @@ class Callback<A>{
     })
   }
 
-  // this :: Callback x
-  // (x -> Callback y) -> Callback y
   bind<B>(g: (a: A) => Callback<B>): Callback<B> {
     return new Callback((callback: CB<B>) => {
-      this.run((error?, result?: A) => {
+      this.run((error?: Err, result?: A) => {
         if (!!error) {
           callback(error, null)
         } else {
@@ -42,11 +39,9 @@ class Callback<A>{
     })
   }
 
-  // this :: Callback x
-  // x -> (y || Callback y) -> Callback y
   then<B>(g: (a: A) => B | Callback<B>): Callback<B> {
     return new Callback((callback: CB<B>) => {
-      this.run((error?, result?: A) => {
+      this.run((error?: Err, result?: A) => {
         if (!!error) {
           callback(error, null)
         } else {
@@ -65,21 +60,20 @@ class Callback<A>{
     })
   }
 
-  bindTo(g) {
+  bindTo(g:(x: A, cb: CB<A>) => Try<A>) {
     return this.bind(Callback.from(g))
   }
 
-  // x -> Callback x
-  static pure<A>(x: A) {
-    return new Callback<A>(((cb: CB<A>) => cb(null, x)))
+  static pure<T>(x: T) {
+    return new Callback<T>(((cb: CB<T>) => cb(null, x)))
   }
 
   static resolve = Callback.pure
 
   // Callback.from casts f into a Callback instance, where
   // f is a function that takes x and a callback function
-  static from<A>(f: (x: A, cb: CB<A>) => Try<A>) {
-    return (x: A) => new Callback(cb => f(x, cb))
+  static from<T>(f: (x: T, cb: CB<T>) => Try<T>): (x: T) => Callback<T> {
+    return (x: T) => new Callback(cb => f(x, cb))
   }
 }
 
