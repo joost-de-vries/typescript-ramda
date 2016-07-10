@@ -1,0 +1,18 @@
+{
+    "version": "0.0.1",
+  "name": "nextstep",
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -p . -w"
+  },
+  "dependencies": {
+    "ramda": "0.21.0"
+  },
+  "devDependencies": {
+    "typescript": "next"
+  },
+  "engines": {
+    "node": "5.6.0",
+    "npm": ">= 3"
+  }
+}
