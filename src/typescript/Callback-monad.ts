@@ -19,7 +19,7 @@ class Callback<A>{
   map<B>(g: (a: A) => B): Callback<B> {
     return new Callback((callback: CB<B>) => {
       this.run((error?: Err, result?: A) => {
-        if (error) {
+        if (!!error) {
           callback(error, null)
         } else {
           callback(null, g(result))
@@ -30,10 +30,10 @@ class Callback<A>{
 
   // this :: Callback x
   // (x -> Callback y) -> Callback y
-  bind<B>(g: (a:Callback<A>) => B) {
+  bind<B>(g: (a:A) => Callback<B>):Callback<B> {
     return new Callback((callback: CB<B>) => {
-      this.run((error?, result?) => {
-        if (error) {
+      this.run((error?, result?:A) => {
+        if (!!error) {
           callback(error, null)
         } else {
           g(result).run(callback)
@@ -44,14 +44,14 @@ class Callback<A>{
 
   // this :: Callback x
   // x -> (y || Callback y) -> Callback y
-  then(g) {
-    return new Callback(callback => {
-      this.run((error, ...result) => {
-        if (!!error) {
+  then<B>(g:(a:A)=> B | Callback<B>):Callback<B> {
+    return new Callback((callback:CB<B>) => {
+      this.run((error?, result?) => {
+        if (error) {
           callback(error, null)
         } else {
           try {
-            const y = g(...result)
+            const y = g(result)
             if (y instanceof Callback) {
               y.run(callback)
             } else {
