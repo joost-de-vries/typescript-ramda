@@ -60,7 +60,7 @@ class Callback<A>{
     })
   }
 
-  bindTo(g:(x: A, cb: CB<A>) => Try<A>) {
+  bindTo(g: (x: A, cb: CB<A>) => Try<A>) {
     return this.bind(Callback.from(g))
   }
 
