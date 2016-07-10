@@ -1,6 +1,6 @@
 type Err = any
-type Try<T> = T | Err   // union types and generics don't seem to mix
-type CB<T> = (err?: any, value?: T) => void
+type Try<T> = T | Err
+type CB<T> = (err?: any, value?: T) => void   // union types, generics and typeguards unfortunatly don't seem to mix because of type erasure
 type AsyncValue<T> = (g: CB<T>) => Try<T>
 
 class Callback<A>{
