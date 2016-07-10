@@ -12,7 +12,7 @@
       "es6",
       "dom"
     ],
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "noEmitOnError": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
