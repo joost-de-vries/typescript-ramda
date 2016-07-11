@@ -1,7 +1,6 @@
 type Err = any
-type Try<T> = T | Err   // union types and generics don't seem to mix
 type CB<T> = (err?: any, value?: T) => void
-type AsyncValue<T> = (g: CB<T>) => Try<T>
+type AsyncValue<T> = (g: CB<T>) => void
 
 class Callback<A>{
   constructor(private f: AsyncValue<A>) {
@@ -60,7 +59,7 @@ class Callback<A>{
     })
   }
 
-  bindTo(g: (x: A, cb: CB<A>) => Try<A>) {
+  bindTo(g: (x: A, cb: CB<A>) => void) {
     return this.bind(Callback.from(g))
   }
 
@@ -72,7 +71,7 @@ class Callback<A>{
 
   // Callback.from casts f into a Callback instance, where
   // f is a function that takes x and a callback function
-  static from<T>(f: (x: T, cb: CB<T>) => Try<T>): (x: T) => Callback<T> {
+  static from<T>(f: (x: T, cb: CB<T>) => void): (x: T) => Callback<T> {
     return (x: T) => new Callback(cb => f(x, cb))
   }
 }
