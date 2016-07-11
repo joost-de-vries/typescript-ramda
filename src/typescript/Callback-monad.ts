@@ -18,9 +18,11 @@ class Callback<A>{
     return new Callback((callback: CB<B>) => {
       this.run((error?: Err, result?: A) => {
         if (!!error) {
-          callback(error, null)
-        } else {
-          callback(null, g(result))
+          callback(error, undefined)
+        } else if(result){
+          callback(undefined, g(result))
+        } else{
+          throw new Error("illegal state")
         }
       })
     })
@@ -30,9 +32,11 @@ class Callback<A>{
     return new Callback((callback: CB<B>) => {
       this.run((error?: Err, result?: A) => {
         if (!!error) {
-          callback(error, null)
-        } else {
+          callback(error, undefined)
+        } else if(result){
           g(result).run(callback)
+        }else{
+          throw new Error("illegal state")
         }
       })
     })
@@ -42,18 +46,20 @@ class Callback<A>{
     return new Callback((callback: CB<B>) => {
       this.run((error?: Err, result?: A) => {
         if (!!error) {
-          callback(error, null)
-        } else {
+          callback(error, undefined)
+        } else if(result){
           try {
             const y: B | Callback<B> = g(result)
             if (y instanceof Callback) {
               y.run(callback)
             } else {
-              callback(null, y)
+              callback(undefined, y)
             }
           } catch (ex) {
-            callback(ex, null)
+            callback(ex, undefined)
           }
+        }else{
+          throw new Error("illegal state")
         }
       })
     })
@@ -64,7 +70,7 @@ class Callback<A>{
   }
 
   static pure<T>(x: T) {
-    return new Callback<T>(((cb: CB<T>) => cb(null, x)))
+    return new Callback<T>(((cb: CB<T>) => cb(undefined, x)))
   }
 
   static resolve = Callback.pure
