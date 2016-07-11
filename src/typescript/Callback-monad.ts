@@ -1,5 +1,5 @@
 type Err = any
-type CB<T> = (err?: any, value?: T) => void
+type CB<T> = (err?: any, value?: T) => void  // it would have been nice to use a union type as argument. But that doesn't play nice with generics and type erasure.'
 type AsyncValue<T> = (g: CB<T>) => void
 
 class Callback<A>{
