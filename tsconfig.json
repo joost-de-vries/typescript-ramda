@@ -12,6 +12,7 @@
       "es6",
       "dom"
     ],
+    "strictNullChecks":true,
     "noImplicitAny": true,
     "noEmitOnError": true,
     "noImplicitReturns": true,
